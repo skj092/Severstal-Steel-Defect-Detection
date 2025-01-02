@@ -24,16 +24,16 @@ def train_one_epoch(train_dl, model, loss_fn, optimizer):
 
 
 def validate_one_epoch(valid_dl, model, loss_fn, optimizer):
-    with torch.no_grad():
-        model.eval()
-        running_loss = 0
-        for itr, batch in enumerate(tqdm(valid_dl)):
-            images, targets = batch
-            images, targets = images.to(device), targets.to(device)
+    model.eval()
+    running_loss = 0
+    for itr, batch in enumerate(tqdm(valid_dl)):
+        images, targets = batch
+        images, targets = images.to(device), targets.to(device)
 
+        with torch.no_grad():
             outputs = model(images)
             loss = loss_fn(outputs, targets)
-            running_loss += loss.item()
-            outputs = outputs.detach().cpu()
-        epoch_loss = (running_loss) / len(valid_dl)
+        running_loss += loss.item()
+        outputs = outputs.detach().cpu()
+    epoch_loss = (running_loss) / len(valid_dl)
     return epoch_loss

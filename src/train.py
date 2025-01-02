@@ -13,6 +13,8 @@ import torch
 if __name__ == "__main__":
     # Loading Data
     path = Path("/home/sonujha/rnd/Severstal-Steel-Defect-Detection/data/")
+    studio_path = Path("/teamspace/studios/this_studio/Severstal-Steel-Defect-Detection/data/")
+    path = studio_path if studio_path.exists() else path
     df = pd.read_csv(path / "train.csv")
     df = df.pivot(index="ImageId", columns="ClassId", values="EncodedPixels")
     df["defects"] = df.count(axis=1)
