@@ -1,5 +1,18 @@
 import torch
 import numpy as np
+import logging
+import sys
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s',
+    handlers=[
+        logging.FileHandler('training_log.txt'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 
 # RLE-Mask utility function
@@ -131,5 +144,5 @@ def epoch_log(epoch_loss, meter):
     '''loggint the metrics at the end of an epoch'''
     dices, iou = meter.get_metric()
     dice, dice_neg, dice_pos = dices
-    print(f"Loss: {epoch_loss} | IoU {iou} | dice {dice} | dice_neg {dice_neg} | dice_pos {dice_pos}")
+    logging.info(f"Loss: {epoch_loss} | IoU {iou} | dice {dice} | dice_neg {dice_neg} | dice_pos {dice_pos}")
     return dice, iou

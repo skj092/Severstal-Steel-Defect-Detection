@@ -9,18 +9,8 @@ from engine import train_one_epoch, validate_one_epoch
 import torch.nn as nn
 import torch
 import time
-import logging
-import sys
+from utils import logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(message)s',
-    handlers=[
-        logging.FileHandler('training_log.txt'),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
 
 
 if __name__ == "__main__":
