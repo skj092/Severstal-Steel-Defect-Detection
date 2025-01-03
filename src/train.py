@@ -8,6 +8,7 @@ from torch.optim import Adam
 from engine import train_one_epoch, validate_one_epoch
 import torch.nn as nn
 import torch
+import time
 
 
 if __name__ == "__main__":
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     df = pd.read_csv(path / "train.csv")
     df = df.pivot(index="ImageId", columns="ClassId", values="EncodedPixels")
     df["defects"] = df.count(axis=1)
-    df = df.sample(n=100)
+    df = df.sample(n=10)
 
     # Cross Validation
     train_df, valid_df = train_test_split(
@@ -52,8 +53,10 @@ if __name__ == "__main__":
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict(),
         }
+        print(f"Starting epoch: {epoch} | phase: train | ⏰: {time.strftime('%H:%M:%S')}")
         train_loss = train_one_epoch(
             train_dl, model, loss_fn=loss_fn, optimizer=optimizer)
+        print(f"Starting epoch: {epoch} | phase: valid | ⏰: {time.strftime('%H:%M:%S')}")
         valid_loss = validate_one_epoch(
             valid_dl, model, loss_fn=loss_fn, optimizer=optimizer)
         print(f"Epoch {epoch} train_loss {train_loss}, valid_loss {valid_loss}")
@@ -63,3 +66,4 @@ if __name__ == "__main__":
             print('=========New optimal fouund, saving state =========')
             state['best_loss'] = best_loss = valid_loss
             torch.save(state, 'model.pth')
+            print()
