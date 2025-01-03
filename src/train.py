@@ -11,6 +11,7 @@ import torch
 
 
 if __name__ == "__main__":
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     # Loading Data
     path = Path("/home/sonujha/rnd/Severstal-Steel-Defect-Detection/data/")
     studio_path = Path("/teamspace/studios/this_studio/Severstal-Steel-Defect-Detection/data/")
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     df = pd.read_csv(path / "train.csv")
     df = df.pivot(index="ImageId", columns="ClassId", values="EncodedPixels")
     df["defects"] = df.count(axis=1)
-    df = df.sample(n=10)
+    df = df.sample(n=100)
 
     # Cross Validation
     train_df, valid_df = train_test_split(
@@ -30,15 +31,16 @@ if __name__ == "__main__":
     valid_ds = SteelDataset(valid_df, path / "train_images")
 
     train_dl = DataLoader(
-        train_ds, batch_size=4, num_workers=2, pin_memory=True, shuffle=True
+        train_ds, batch_size=32, num_workers=2, pin_memory=True, shuffle=True
     )
     valid_dl = DataLoader(
-        valid_ds, batch_size=4, num_workers=2, pin_memory=True, shuffle=False
+        valid_ds, batch_size=64, num_workers=2, pin_memory=True, shuffle=False
     )
 
     # Model, loss function and optimizer
     model = Unet("resnet18", encoder_weights="imagenet",
                  classes=4, activation=None)
+    model.to(device)
     optimizer = Adam(model.parameters(), lr=1e-3)
     loss_fn = nn.BCEWithLogitsLoss()
 

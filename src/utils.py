@@ -53,7 +53,7 @@ def metric(probability, truth, threshold=0.5, reduction='none'):
         dice_pos = 2 * (p*t).sum(-1)/((p+t).sum(-1))
 
         dice_neg = dice_neg[neg_index]
-        dice_pos = dice_neg[pos_index]
+        dice_pos = dice_pos[pos_index]
         dice = torch.cat([dice_pos, dice_neg])
 
         num_neg = len(neg_index)
@@ -86,7 +86,7 @@ def compute_ious(pred, label, classes, ignore_index=255, only_present=True):
     return ious if ious else [1]
 
 
-def compute_iou_batch(outputs, labels, classes=None):
+def compute_iou_batch(outputs, labels, classes=[1]):
     '''computes mean iou for batch of ground truth masks and predicted masks'''
     ious = []
     preds = np.copy(outputs)
@@ -100,7 +100,7 @@ def compute_iou_batch(outputs, labels, classes=None):
 class Meter(object):
     '''A meter to keep track of iou and dice scores through an epoch'''
 
-    def __init__(self, epoch):
+    def __init__(self):
         self.base_threshold = 0.5
         self.base_dice_scores = []
         self.dice_neg_scores = []
@@ -131,5 +131,5 @@ def epoch_log(epoch_loss, meter):
     '''loggint the metrics at the end of an epoch'''
     dices, iou = meter.get_metric()
     dice, dice_neg, dice_pos = dices
-    print(f"Loss: {loss} | IoU {iou} | dice {dice} | dice_neg {dice_neg} | dice_pos {dice_pos}")
+    print(f"Loss: {epoch_loss} | IoU {iou} | dice {dice} | dice_neg {dice_neg} | dice_pos {dice_pos}")
     return dice, iou
