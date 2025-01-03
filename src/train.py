@@ -9,6 +9,18 @@ from engine import train_one_epoch, validate_one_epoch
 import torch.nn as nn
 import torch
 import time
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s',
+    handlers=[
+        logging.FileHandler('training_log.txt'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 
 if __name__ == "__main__":
@@ -53,17 +65,17 @@ if __name__ == "__main__":
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict(),
         }
-        print(f"Starting epoch: {epoch} | phase: train | ⏰: {time.strftime('%H:%M:%S')}")
+        logging.info(f"Starting epoch: {epoch} | phase: train | ⏰: {time.strftime('%H:%M:%S')}")
         train_loss = train_one_epoch(
             train_dl, model, loss_fn=loss_fn, optimizer=optimizer)
-        print(f"Starting epoch: {epoch} | phase: valid | ⏰: {time.strftime('%H:%M:%S')}")
+        logging.info(f"Starting epoch: {epoch} | phase: valid | ⏰: {time.strftime('%H:%M:%S')}")
         valid_loss = validate_one_epoch(
             valid_dl, model, loss_fn=loss_fn, optimizer=optimizer)
-        print(f"Epoch {epoch} train_loss {train_loss}, valid_loss {valid_loss}")
+        logging.info(f"Epoch {epoch} train_loss {train_loss}, valid_loss {valid_loss}")
 
         # save the model
         if valid_loss < best_loss:
-            print('=========New optimal fouund, saving state =========')
+            logging.info('=========New optimal fouund, saving state =========')
             state['best_loss'] = best_loss = valid_loss
             torch.save(state, 'model.pth')
-            print()
+            logging.info('\n')

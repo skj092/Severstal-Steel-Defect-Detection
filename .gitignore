@@ -2,3 +2,4 @@ data
 *.pyc
 notebooks/.ipynb_checkpoints/
 *.pth
+training_log.txt
